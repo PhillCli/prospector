@@ -79,9 +79,15 @@ class PylintTool(ToolBase):
         # allow the indentation specified in the pylint configuration file; we
         # replace it instead with our own version which is more lenient and
         # configurable
-        linter.disable("mixed-indentation")
-        indent_checker = IndentChecker(linter)
-        linter.register_checker(indent_checker)
+        try:
+            linter.disable("mixed-indentation")
+            indent_checker = IndentChecker(linter)
+            linter.register_checker(indent_checker)
+        # pylint: disable=pointless-except
+        except UnknownMessageError:
+            # If the msg_id doesn't exist in PyLint any more,
+            # don't worry about it.
+            pass
 
         max_line_length = prospector_config.max_line_length
         for checker in linter.get_checkers():
